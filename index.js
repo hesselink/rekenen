@@ -30,8 +30,8 @@ function refresh() {
   const number1 = document.getElementById("number1");
   const number2 = document.getElementById("number2");
   const operator = document.getElementById("operator");
-  const x = random(configuration.lower, configuration.upper);
-  const y = random(configuration.lower, configuration.upper);
+  const x = randomInt(configuration.lower, configuration.upper);
+  const y = randomInt(configuration.lower, configuration.upper);
   number1.textContent = x;
   number2.textContent = y;
   operator.textContent = configuration.operator;
@@ -39,12 +39,12 @@ function refresh() {
 }
 
 function pick(xs) {
-  const ix = random(0, xs.length - 1);
+  const ix = randomInt(0, xs.length - 1);
   return xs[ix];
 }
 
 // random integer from 'from' to 'to' (inclusive, [from, to])
-function random(from, to) {
+function randomInt(from, to) {
   return Math.floor(Math.random() * (to - from + 1)) + from;
 }
 

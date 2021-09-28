@@ -5,7 +5,7 @@ let configurations =
     }
   , { lower: 1
     , upper: 10
-    , operator: '*'
+    , operator: '×'
     }
   ]
 let answer;
@@ -51,7 +51,7 @@ function random(from, to) {
 function calculate(operator, x, y) {
   switch(operator) {
     case '+': return x + y;
-    case '*': return x * y;
+    case '×': return x * y;
     case '-': return x - y;
   }
 }

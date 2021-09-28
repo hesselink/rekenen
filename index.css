@@ -2,14 +2,14 @@
   margin: 0 auto;
   max-width: 800px;
   text-align: center;
-  font-size: xxx-large;
+  font-size: xx-large;
   font-family: sans-serif;
   font-weight: 300;
 }
 
 #antwoord {
   height: 60px;
-  font-size: xxx-large;
+  font-size: xx-large;
   text-align: center;
   border: 1px solid #ddd;
   font-weight: 300;
@@ -17,7 +17,7 @@
 }
 
 #controleren {
-  font-size: xxx-large;
+  font-size: xx-large;
   border: 2px solid #4e7ac7;
   border-radius: 5px;
   padding: 5px 15px;

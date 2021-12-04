@@ -19,32 +19,41 @@ let answered = false;
 document.addEventListener('DOMContentLoaded', () => {
   refresh();
   const controleren = document.getElementById("controleren");
-  controleren.addEventListener("click", () => {
-    if (!answered) {
-      const antwoord = document.getElementById("antwoord");
-      const resultaat = document.getElementById("resultaat");
-      if (antwoord.value == "") {
-        return;
-      }
-      if (antwoord.value == answer) {
-        resultaat.innerText = "Super de puper goed!";
-        resultaat.className = "goed";
-      } else {
-        resultaat.innerText = "Niet helemaal, het antwoord was " + answer;
-        resultaat.className = "fout";
-      }
-      answered = true;
-      controleren.value = "Nieuwe som"
-    } else {
-      antwoord.value = "";
-      resultaat.innerText = "";
-      resultaat.className = "";
-      answered = false;
-      controleren.value = "Controleren"
-      refresh();
+  controleren.addEventListener("click", check);
+  const antwoord = document.getElementById("antwoord");
+  antwoord.addEventListener("keypress", ev => {
+    if (ev.keyCode == 13) {
+      check();
     }
   });
 });
+
+function check() {
+  const controleren = document.getElementById("controleren");
+  if (!answered) {
+    const antwoord = document.getElementById("antwoord");
+    const resultaat = document.getElementById("resultaat");
+    if (antwoord.value == "") {
+      return;
+    }
+    if (antwoord.value == answer) {
+      resultaat.innerText = "Super de puper goed!";
+      resultaat.className = "goed";
+    } else {
+      resultaat.innerText = "Niet helemaal, het antwoord was " + answer;
+      resultaat.className = "fout";
+    }
+    answered = true;
+    controleren.value = "Nieuwe som"
+  } else {
+    antwoord.value = "";
+    resultaat.innerText = "";
+    resultaat.className = "";
+    answered = false;
+    controleren.value = "Controleren"
+    refresh();
+  }
+}
 
 function refresh() {
   const configuration = pick(configurations);

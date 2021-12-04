@@ -29,6 +29,22 @@
   cursor: pointer;
 }
 
+#resultaat {
+  padding: 15px 0 10px 0;
+  border: 2px solid white;
+  border-radius: 5px;
+}
+
+#resultaat.goed {
+  background-color: #9e9;
+  border-color: #9e9
+}
+
+#resultaat.fout {
+  background-color: #f99;
+  border-color: #f99;
+}
+
 /* Hide input type=number spinner buttons */
 
 /* Chrome, Safari, Edge, Opera */

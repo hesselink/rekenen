@@ -14,19 +14,35 @@ let configurations =
     }
   ]
 let answer;
+let answered = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   refresh();
   const controleren = document.getElementById("controleren");
   controleren.addEventListener("click", () => {
-    const antwoord = document.getElementById("antwoord");
-    if (antwoord.value == answer) {
-      alert("Super de puper goed!");
+    if (!answered) {
+      const antwoord = document.getElementById("antwoord");
+      const resultaat = document.getElementById("resultaat");
+      if (antwoord.value == "") {
+        return;
+      }
+      if (antwoord.value == answer) {
+        resultaat.innerText = "Super de puper goed!";
+        resultaat.className = "goed";
+      } else {
+        resultaat.innerText = "Niet helemaal, het antwoord was " + answer;
+        resultaat.className = "fout";
+      }
+      answered = true;
+      controleren.value = "Nieuwe som"
     } else {
-      alert("Niet helemaal, het antwoord was " + answer);
+      antwoord.value = "";
+      resultaat.innerText = "";
+      resultaat.className = "";
+      answered = false;
+      controleren.value = "Controleren"
+      refresh();
     }
-    antwoord.value = "";
-    refresh();
   });
 });
 

@@ -1,11 +1,16 @@
 let configurations =
-  [ { lower: 1
-    , upper: 999
+  [ { genXY: () => [randomInt(1, 999), randomInt(1, 999)]
     , operator: '+'
     }
-  , { lower: 1
-    , upper: 10
+  , { genXY: () => [randomInt(1, 10), randomInt(1, 10)]
     , operator: '×'
+    }
+  , { genXY: () => {
+        const x = randomInt(1, 999);
+        const y = randomInt(1, x);
+        return [x, y]
+      }
+    , operator: '-'
     }
   ]
 let answer;
@@ -30,12 +35,17 @@ function refresh() {
   const number1 = document.getElementById("number1");
   const number2 = document.getElementById("number2");
   const operator = document.getElementById("operator");
-  const x = randomInt(configuration.lower, configuration.upper);
-  const y = randomInt(configuration.lower, configuration.upper);
-  number1.textContent = x;
-  number2.textContent = y;
-  operator.textContent = configuration.operator;
-  answer = calculate(configuration.operator, x, y);
+  const generated = generate(configuration);
+  number1.innerHTML = showNum(generated.x);
+  number2.innerHTML = showNum(generated.y);
+  operator.textContent = generated.operator;
+  answer = showNum(generated.answer);
+}
+
+function generate(configuration) {
+  const [x, y] = configuration.genXY();
+  const answer = calculate(configuration.operator, x, y);
+  return { x, y, operator: configuration.operator, answer }
 }
 
 function pick(xs) {
@@ -46,6 +56,10 @@ function pick(xs) {
 // random integer from 'from' to 'to' (inclusive, [from, to])
 function randomInt(from, to) {
   return Math.floor(Math.random() * (to - from + 1)) + from;
+}
+
+function showNum(x) {
+  return "" + x;
 }
 
 function calculate(operator, x, y) {

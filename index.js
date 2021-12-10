@@ -1,3 +1,6 @@
+import ReactDOM from "react-dom";
+import { useState } from "react";
+
 let configurations =
   [ { genXY: () => [randomInt(1, 999), randomInt(1, 999)]
     , operator: '+'
@@ -13,59 +16,70 @@ let configurations =
     , operator: '-'
     }
   ]
-let answer;
-let answered = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-  refresh();
-  const controleren = document.getElementById("controleren");
-  controleren.addEventListener("click", check);
-  const antwoord = document.getElementById("antwoord");
-  antwoord.addEventListener("keypress", ev => {
-    if (ev.keyCode == 13) {
-      check();
+  function generateNewProblem() {
+    const configuration = pick(configurations);
+    return generate(configuration);
+  }
+
+  function Root() {
+    const [result, setResult] = useState("");
+    const [answer, setAnswer] = useState("");
+    const [problem, setProblem] = useState(generateNewProblem());
+    const answered = result != "";
+
+    function check() {
+      if (answered) {
+        setResult("");
+        setAnswer("");
+        setProblem(generateNewProblem());
+      } else {
+        if (answer == "") {
+          return;
+        }
+        if (showNum(problem.answer) == answer) {
+          setResult("goed");
+        } else {
+          setResult("fout");
+        }
+      }
     }
-  });
+
+    return <div>
+             <Som x={ problem.x } operator={ problem.operator } y={ problem.y } answer={ answer } setAnswer={ setAnswer }/>
+             <Controleren answered={ answered } check={ check } />
+             <Resultaat result={ result } answer={ problem.answer }/>
+           </div>
+  }
+
+  function Som(props) {
+    return <p>
+             <span id="number1">{props.x} </span>
+             <span id="operator">{props.operator} </span>
+             <span id="number2">{props.y} </span>
+             <span>= </span>
+             <input id="antwoord" size="6" type="number" value={props.answer} onChange={ e => props.setAnswer(e.target.value) }/>
+           </p>
+  }
+
+  function Controleren(props) {
+    return <p>
+             <input id="controleren" type="submit" value={ props.answered ? "Nieuwe som" : "Controleren" } onClick={props.check}/>
+           </p>
+  }
+
+  function Resultaat(props) {
+    const text = props.result == "" ? "" :
+                 props.result == "goed" ? "Super de puper goed!" :
+                 "Niet helemaal, het antwoord was " + props.answer;
+    return <p id="resultaat" className={ props.result }>{ text }</p>
+  }
+
+  const rootContainer = document.getElementById("root-container");
+  ReactDOM.render(<Root/>, rootContainer);
 });
 
-function check() {
-  const controleren = document.getElementById("controleren");
-  if (!answered) {
-    const antwoord = document.getElementById("antwoord");
-    const resultaat = document.getElementById("resultaat");
-    if (antwoord.value == "") {
-      return;
-    }
-    if (antwoord.value == answer) {
-      resultaat.innerText = "Super de puper goed!";
-      resultaat.className = "goed";
-    } else {
-      resultaat.innerText = "Niet helemaal, het antwoord was " + answer;
-      resultaat.className = "fout";
-    }
-    answered = true;
-    controleren.value = "Nieuwe som"
-  } else {
-    antwoord.value = "";
-    resultaat.innerText = "";
-    resultaat.className = "";
-    answered = false;
-    controleren.value = "Controleren"
-    refresh();
-  }
-}
-
-function refresh() {
-  const configuration = pick(configurations);
-  const number1 = document.getElementById("number1");
-  const number2 = document.getElementById("number2");
-  const operator = document.getElementById("operator");
-  const generated = generate(configuration);
-  number1.innerHTML = showNum(generated.x);
-  number2.innerHTML = showNum(generated.y);
-  operator.textContent = generated.operator;
-  answer = showNum(generated.answer);
-}
 
 function generate(configuration) {
   const [x, y] = configuration.genXY();

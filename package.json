@@ -1,0 +1,27 @@
+{
+  "name": "rekenen",
+  "version": "1.0.0",
+  "source": "index.html",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build",
+    "deploy": "yarn build && scp dist/* vps:www/rekenen"
+  },
+  "targets": {
+    "default": {
+      "publicUrl": "."
+    }
+  },
+  "repository": "git@github.com:hesselink/rekenen.git",
+  "author": "Erik Hesselink <hesselink@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "^17.0.37",
+    "@types/react-dom": "^17.0.11",
+    "parcel": "^2.0.1"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  }
+}

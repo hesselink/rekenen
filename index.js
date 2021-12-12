@@ -1,5 +1,7 @@
 import ReactDOM from "react-dom";
 import { useState } from "react";
+import MathJax from "react-mathjax";
+import * as _ from "lodash";
 
 let configurations =
   [ { genXY: () => [randomInt(1, 999), randomInt(1, 999)]
@@ -14,6 +16,9 @@ let configurations =
         return [x, y]
       }
     , operator: '-'
+    }
+  , { genXY: () => [randomFrac(2, 10), randomFrac(2, 10)]
+    , operator: '+'
     }
   ]
 
@@ -38,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (answer == "") {
           return;
         }
-        if (showNum(problem.answer) == answer) {
+        if (_.isEqual(problem.answer, parse(answer))) {
           setResult("goed");
         } else {
           setResult("fout");
@@ -46,21 +51,35 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     }
 
-    return <div>
-             <Som x={ problem.x } operator={ problem.operator } y={ problem.y } answer={ answer } setAnswer={ setAnswer }/>
-             <Controleren answered={ answered } check={ check } />
-             <Resultaat result={ result } answer={ problem.answer }/>
-           </div>
+    return <MathJax.Provider>
+             <div>
+               <Som x={ problem.x } operator={ problem.operator } y={ problem.y } answer={ answer } setAnswer={ setAnswer }/>
+               <Controleren answered={ answered } check={ check } />
+               <Resultaat result={ result } answer={ problem.answer }/>
+             </div>
+           </MathJax.Provider>
   }
 
   function Som(props) {
-    return <p>
-             <span id="number1">{props.x} </span>
-             <span id="operator">{props.operator} </span>
-             <span id="number2">{props.y} </span>
-             <span>= </span>
-             <input id="antwoord" size="6" type="number" value={props.answer} onChange={ e => props.setAnswer(e.target.value) }/>
+    return <p id="som">
+             <span id="number1"><MathJax.Node inline formula={showNum(props.x)} /></span>
+             <span id="operator">{props.operator}</span>
+             <span id="number2"><MathJax.Node inline formula={showNum(props.y)} /></span>
+             <span>=</span>
+             <Antwoord type={isFrac(props.x) ? "fraction" : "number"} answer={props.answer} setAnswer={props.setAnswer} />
            </p>
+  }
+
+  function Antwoord(props) {
+    answer = props.answer == "" ? { numerator: "", denominator: "" } : props.answer;
+    return props.type == "fraction" ?
+      <span id="antwoord-fraction">
+        <input id="antwoord-teller" className="antwoord" size="6" type="number" value={answer.numerator} onChange={ e => props.setAnswer({ ...answer, numerator: e.target.value}) }/>
+        <hr />
+        <input id="antwoord-noemer" className="antwoord" size="6" type="number" value={answer.denominator} onChange={ e => props.setAnswer({ ...answer, denominator: e.target.value} ) }/>
+      </span>
+      :
+      <span><input id="antwoord" className="antwoord" size="6" type="number" value={props.answer} onChange={ e => props.setAnswer(e.target.value) }/></span>
   }
 
   function Controleren(props) {
@@ -70,10 +89,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function Resultaat(props) {
-    const text = props.result == "" ? "" :
-                 props.result == "goed" ? "Super de puper goed!" :
-                 "Niet helemaal, het antwoord was " + props.answer;
-    return <p id="resultaat" className={ props.result }>{ text }</p>
+    return <p id="resultaat" className={ props.result }>
+           {
+             props.result == "" ? "" :
+             props.result == "goed" ? "Super de puper goed!" :
+             <span>Niet helemaal, het antwoord was <MathJax.Node inline formula={ showNum(props.answer) } /></span>
+           }
+           </p>
   }
 
   const rootContainer = document.getElementById("root-container");
@@ -97,13 +119,52 @@ function randomInt(from, to) {
   return Math.floor(Math.random() * (to - from + 1)) + from;
 }
 
+function randomFrac(fromD, toD) {
+  const denominator = randomInt(fromD, toD);
+  const numerator = randomInt(1, denominator - 1);
+  return { numerator, denominator };
+}
+
+function addFracs(x, y) {
+  const newNumerator = x.numerator * y.denominator + y.numerator * x.denominator;
+  return simplifyFrac({ numerator: newNumerator, denominator: x.denominator * y.denominator });
+}
+
+function simplifyFrac(x) {
+  const fracGcd = gcd(x.numerator, x.denominator);
+  return { numerator: x.numerator / fracGcd, denominator: x.denominator / fracGcd }
+}
+
+function gcd(x, y) {
+  const a = Math.max(x, y);
+  const b = Math.min(x, y);
+  const rem = a % b;
+  return rem === 0 ? b : gcd(b, rem)
+}
+
+function showFrac(x) {
+  return `\\frac{${x.numerator}}{${x.denominator}}`;
+}
+
+function isFrac(x) {
+  return !!x.denominator;
+}
+
 function showNum(x) {
-  return "" + x;
+  return isFrac(x) ? showFrac(x) : "" + x;
+}
+
+function parse(x) {
+  return isFrac(x) ? parseFrac(x) : parseInt(x);
+}
+
+function parseFrac(x) {
+  return { numerator: parseInt(x.numerator), denominator: parseInt(x.denominator) };
 }
 
 function calculate(operator, x, y) {
   switch(operator) {
-    case '+': return x + y;
+    case '+': return isFrac(x) ? addFracs(x, y) : x + y;
     case '×': return x * y;
     case '-': return x - y;
   }

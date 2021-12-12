@@ -7,13 +7,26 @@
   font-weight: 300;
 }
 
-#antwoord {
+.antwoord {
   height: 60px;
   font-size: xx-large;
   text-align: center;
   border: 1px solid #ddd;
   font-weight: 300;
   border-radius: 5px;
+}
+
+#som {
+  display: inline-grid;
+  grid-template-columns: repeat(5, auto);
+}
+
+#som > span {
+  margin: auto 0.2em;
+}
+
+#antwoord-fraction {
+  width: 150px;
 }
 
 #controleren {

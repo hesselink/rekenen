@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     return <MathJax.Provider>
              <div>
-               <Som x={ problem.x } operator={ problem.operator } y={ problem.y } answer={ answer } setAnswer={ setAnswer }/>
+               <Som x={ problem.x } operator={ problem.operator } y={ problem.y } answer={ answer } setAnswer={ setAnswer } check={ check }/>
                <Controleren answered={ answered } check={ check } />
                <Resultaat result={ result } answer={ problem.answer }/>
                <Configuration configuration={ configuration } setConfiguration={ c => { clearAndNew(c); setConfiguration(c); } }/>
@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
              <span id="operator">{props.operator}</span>
              <span id="number2"><MathJax.Node inline formula={showNum(props.y)} /></span>
              <span>=</span>
-             <Antwoord type={isFrac(props.x) ? "fraction" : "number"} answer={props.answer} setAnswer={props.setAnswer} />
+             <Antwoord type={isFrac(props.x) ? "fraction" : "number"} answer={props.answer} setAnswer={props.setAnswer} check={ props.check }/>
            </p>
   }
 
@@ -88,12 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
     answer = props.answer == "" ? { numerator: "", denominator: "" } : props.answer;
     return props.type == "fraction" ?
       <span id="antwoord-fraction">
-        <input id="antwoord-teller" className="antwoord" size="6" type="number" value={answer.numerator} onChange={ e => props.setAnswer({ ...answer, numerator: e.target.value}) }/>
+        <input id="antwoord-teller" className="antwoord" size="6" type="number" value={answer.numerator} onChange={ e => props.setAnswer({ ...answer, numerator: e.target.value}) } onKeyPress={ e => { if (e.key == "Enter") { document.getElementById("antwoord-noemer").focus(); } } }/>
         <hr />
-        <input id="antwoord-noemer" className="antwoord" size="6" type="number" value={answer.denominator} onChange={ e => props.setAnswer({ ...answer, denominator: e.target.value} ) }/>
+        <input id="antwoord-noemer" className="antwoord" size="6" type="number" value={answer.denominator} onChange={ e => props.setAnswer({ ...answer, denominator: e.target.value} ) } onKeyPress={ e => { if (e.key == "Enter") { props.check(); } } }/>
       </span>
       :
-      <span><input id="antwoord" className="antwoord" size="6" type="number" value={props.answer} onChange={ e => props.setAnswer(e.target.value) }/></span>
+      <span><input id="antwoord" className="antwoord" size="6" type="number" value={props.answer} onChange={ e => props.setAnswer(e.target.value) } onKeyPress={ e => { if (e.key == "Enter") { props.check(); } } } /></span>
   }
 
   function Controleren(props) {

@@ -58,6 +58,40 @@
   border-color: #f99;
 }
 
+#config-panel {
+  font-size: smaller;
+  color: #666;
+  text-align: left;
+  position: absolute;
+  top: 500px;
+  left: 40px;
+}
+
+#config-panel h2 {
+  font-size: xx-large;
+  font-weight: normal;
+}
+
+#configurations {
+  display: table;
+  grid-template-columns: 25px 1fr;
+  grid-template-rows: repeat(4, 1fr);
+}
+
+.configuration {
+  display: table-row;
+}
+
+.configuration > * {
+  display: table-cell;
+  padding: 7px;
+}
+
+.configuration input[type=checkbox] {
+  width: 20px;
+  height: 20px;
+}
+
 /* Hide input type=number spinner buttons */
 
 /* Chrome, Safari, Edge, Opera */

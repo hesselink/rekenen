@@ -3,42 +3,55 @@ import { useState } from "react";
 import MathJax from "react-mathjax";
 import * as _ from "lodash";
 
-let configurations =
-  [ { genXY: () => [randomInt(1, 999), randomInt(1, 999)]
+let initialConfiguration =
+  [ { name: "Optellen tot 1000"
+    , genXY: () => [randomInt(1, 999), randomInt(1, 999)]
     , operator: '+'
+    , enabled: true
     }
-  , { genXY: () => [randomInt(1, 10), randomInt(1, 10)]
+  , { name: "Tafels tot en met 10"
+    , genXY: () => [randomInt(1, 10), randomInt(1, 10)]
     , operator: '×'
+    , enabled: true
     }
-  , { genXY: () => {
+  , { name: "Aftrekken tot 1000"
+    , genXY: () => {
         const x = randomInt(1, 999);
         const y = randomInt(1, x);
         return [x, y]
       }
     , operator: '-'
+    , enabled: true
     }
-  , { genXY: () => [randomFrac(2, 10), randomFrac(2, 10)]
+  , { name: "Breuken optellen"
+    , genXY: () => [randomFrac(2, 10), randomFrac(2, 10)]
     , operator: '+'
+    , enabled: true
     }
   ]
 
 document.addEventListener('DOMContentLoaded', () => {
-  function generateNewProblem() {
-    const configuration = pick(configurations);
-    return generate(configuration);
+  function generateNewProblem(configuration) {
+    const conf = pick(configuration.filter(c => c.enabled));
+    return generate(conf);
   }
 
   function Root() {
     const [result, setResult] = useState("");
     const [answer, setAnswer] = useState("");
-    const [problem, setProblem] = useState(generateNewProblem());
+    const [configuration, setConfiguration] = useState(initialConfiguration);
+    const [problem, setProblem] = useState(generateNewProblem(configuration));
     const answered = result != "";
+
+    function clearAndNew(conf) {
+      setResult("");
+      setAnswer("");
+      setProblem(generateNewProblem(conf));
+    }
 
     function check() {
       if (answered) {
-        setResult("");
-        setAnswer("");
-        setProblem(generateNewProblem());
+        clearAndNew(configuration);
       } else {
         if (answer == "") {
           return;
@@ -56,6 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                <Som x={ problem.x } operator={ problem.operator } y={ problem.y } answer={ answer } setAnswer={ setAnswer }/>
                <Controleren answered={ answered } check={ check } />
                <Resultaat result={ result } answer={ problem.answer }/>
+               <Configuration configuration={ configuration } setConfiguration={ c => { clearAndNew(c); setConfiguration(c); } }/>
              </div>
            </MathJax.Provider>
   }
@@ -96,6 +110,29 @@ document.addEventListener('DOMContentLoaded', () => {
              <span>Niet helemaal, het antwoord was <MathJax.Node inline formula={ showNum(props.answer) } /></span>
            }
            </p>
+  }
+
+  function Configuration(props) {
+    function onCheckChanged(e, conf) {
+      conf.enabled = e.target.checked;
+      if (props.configuration.some(c => c.enabled)) {
+        props.setConfiguration(props.configuration.slice());
+      } else {
+        conf.enabled = true;
+      }
+    }
+
+    return <div id="config-panel">
+             <h2>Welke sommen wil je?</h2>
+             <div id="configurations">
+             { props.configuration.map((conf, i) =>
+                 <div className="configuration" key={ conf.name }>
+                   <div><input type="checkbox" checked={ conf.enabled } onChange={ e => onCheckChanged(e, conf) }/></div>
+                   <div>{ conf.name }</div>
+                 </div>)
+             }
+             </div>
+           </div>
   }
 
   const rootContainer = document.getElementById("root-container");

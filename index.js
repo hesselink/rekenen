@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function Antwoord(props) {
-    answer = props.answer == "" ? { numerator: "", denominator: "" } : props.answer;
+    const answer = props.answer == "" ? { numerator: "", denominator: "" } : props.answer;
     return props.type == "fraction" ?
       <span id="antwoord-fraction">
         <input id="antwoord-teller" className="antwoord" size="6" type="number" value={answer.numerator} onChange={ e => props.setAnswer({ ...answer, numerator: e.target.value}) } onKeyPress={ e => { if (e.key == "Enter") { document.getElementById("antwoord-noemer").focus(); } } }/>

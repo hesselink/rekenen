@@ -28,6 +28,11 @@ let initialConfiguration =
     , operator: '+'
     , enabled: true
     }
+  , { name: "Keersommen tot 100"
+    , genXY: () => [randomInt(1, 100), randomInt(1, 100)]
+    , operator: '×'
+    , enabled: true
+    }
   ]
 
 document.addEventListener('DOMContentLoaded', () => {
